@@ -1,0 +1,138 @@
+nelmio_api_doc:
+    documentation:
+        info:
+            title: Publisher API
+            description: API for publishing books and more 
+            version: 1.0.0
+        security:
+            - Bearer: []
+        paths:
+            /api/v1/pakages/all:
+                get:
+                    description: All pakages
+                    tags:
+                        - Admin management
+                    # parameters:
+                    #     - in: query
+                    #       name: username
+                    #       required: true
+                    #       schema:
+                    #         type: string
+                    #     - in: query
+                    #       name: password
+                    #       required: true
+                    #       schema:
+                    #         type: string
+            #         responses:
+            #             200:
+            #                 description: ok
+            #                 content: 
+            #                     application/json: 
+            #                         schema: 
+            #                             type: object
+            #                             properties:
+            #                                 email: { type: string, example: 'string'}
+            #                                 password: { type: string, example: 'string'}
+            /api/v1/table/pakage/all:
+                get:
+                    description: All pakages
+                    tags:
+                        - Admin management
+                    # parameters:
+                    #     - in: query
+                    #       name: username
+                    #       required: true
+                    #       schema:
+                    #         type: string
+                    #     - in: query
+                    #       name: password
+                    #       required: true
+                    #       schema:
+                    #         type: string
+            #         responses:
+            #             200:
+            #                 description: ok
+            #                 content: 
+            #                     application/json: 
+            #                         schema: 
+            #                             type: object
+            #                             properties:
+            #                                 email: { type: string, example: 'string'}
+            #                                 password: { type: string, example: 'string'}
+            /api/v1/table/pakage/new:
+                post:
+                    description: New pakage
+                    tags:
+                        - Admin management
+                    # parameters:
+                    #     - in: query
+                    #       name: username
+                    #       required: true
+                    #       schema:
+                    #         type: string
+                    #     - in: query
+                    #       name: password
+                    #       required: true
+                    #       schema:
+                    #         type: string
+            #         responses:
+            #             200:
+            #                 description: ok
+            #                 content: 
+            #                     application/json: 
+            #                         schema: 
+            #                             type: object
+            #                             properties:
+            #                                 email: { type: string, example: 'string'}
+            #                                 password: { type: string, example: 'string'} 
+            /api/v1/user/me:
+                get:
+                    description: User me
+                    tags:
+                        - Admin management
+                    # parameters:
+                    #     - in: query
+                    #       name: username
+                    #       required: true
+                    #       schema:
+                    #         type: string
+                    #     - in: query
+                    #       name: password
+                    #       required: true
+                    #       schema:
+                    #         type: string
+            #         responses:
+            #             200:
+            #                 description: ok
+            #                 content: 
+            #                     application/json: 
+            #                         schema: 
+            #                             type: object
+            #                             properties:
+            #                                 email: { type: string, example: 'string'}
+            #                                 password: { type: string, example: 'string'} 
+            /api/v1/user/update:
+                post:
+                    description: User update
+                    tags:
+                        - Admin management
+                    parameters:
+                        - in: query
+                          name: id
+                          required: true
+                          schema:
+                            type: string     
+        tags: 
+           - name: Admin management
+        #    - name: Package management
+        #    - name: Network management 
+        #    - name: Referral management 
+        components:
+            securitySchemes:
+                    Bearer:
+                        type: http
+                        scheme: bearer
+                        bearerFormat: JWT   
+    areas: # to filter documented areas
+        path_patterns:
+            - ^/api/v1
