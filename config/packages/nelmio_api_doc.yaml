@@ -35,7 +35,7 @@ nelmio_api_doc:
             #                                 password: { type: string, example: 'string'}
             /api/v1/table/pakage/all:
                 get:
-                    description: All pakages
+                    description: All table pakages
                     tags:
                         - Admin management
                     # parameters:
@@ -61,7 +61,7 @@ nelmio_api_doc:
             #                                 password: { type: string, example: 'string'}
             /api/v1/table/pakage/new:
                 post:
-                    description: New pakage
+                    description: New table pakage
                     tags:
                         - Admin management
                     # parameters:
@@ -85,6 +85,17 @@ nelmio_api_doc:
             #                             properties:
             #                                 email: { type: string, example: 'string'}
             #                                 password: { type: string, example: 'string'} 
+            /api/v1/table/pakage/update/{table_pakage_id}:
+                post:
+                    description: Update table pakage
+                    tags:
+                        - Admin management
+                    # parameters:
+                    #     - in: query
+                    #       name: id
+                    #       required: true
+                    #       schema:
+                    #         type: integer
             /api/v1/user/me:
                 get:
                     description: User me
@@ -111,17 +122,47 @@ nelmio_api_doc:
             #                             properties:
             #                                 email: { type: string, example: 'string'}
             #                                 password: { type: string, example: 'string'} 
-            /api/v1/user/update:
+            /api/v1/user/update/{user_id}:
                 post:
                     description: User update
                     tags:
                         - Admin management
-                    parameters:
-                        - in: query
-                          name: id
-                          required: true
-                          schema:
-                            type: string     
+                    # parameters:
+                    #     - in: query
+                    #       name: id
+                    #       required: true
+                    #       schema:
+                    #         type: string
+            /api/v1/token/rate/new:
+                post:
+                    description: New token rate
+                    tags:
+                        - Admin management 
+            /api/v1/token/rate/update:
+                post:
+                    description: New token rate
+                    tags:
+                        - Admin management       
+            /api/v1/token/rate/rewiew:
+                get:
+                    description: Rewiew token rate
+                    tags:
+                        - Admin management     
+            /api/v1/setting/options/new:
+                post:
+                    description: New setting options
+                    tags:
+                        - Admin management     
+            /api/v1/setting/options/rewiew:
+                get:
+                    description: Rewiew setting options
+                    tags:
+                        - Admin management
+            /api/v1/setting/options/update:
+                post:
+                    description: Updated setting options
+                    tags:
+                        - Admin management          
         tags: 
            - name: Admin management
         #    - name: Package management
