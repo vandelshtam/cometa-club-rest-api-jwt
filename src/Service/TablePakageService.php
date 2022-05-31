@@ -54,4 +54,27 @@ class TablePakageService
 
         return new PakageAllListResponse($items);
     }
+
+    public function update($entityManager,$tablePakageRequest,$table_pakage_id): PakageAllListResponse
+    {
+        $update_pakage = $entityManager->getRepository(TablePakage::class)->findOneBy(['id' => $table_pakage_id]);
+        $update_pakage -> setName($tablePakageRequest->getName());
+        $update_pakage -> setPricePakage($tablePakageRequest->getPricePakage());
+        $update_pakage -> setDescription($tablePakageRequest->getDescription());
+        $update_pakage -> setUpdatedAt((new \DateTime()));
+
+        $this->em->persist($update_pakage);
+        $this->em->flush();
+
+        $pakage = $this->tablePakageRepository->getByTokenPakageOne($table_pakage_id);
+        $items = array_map(
+            fn (TablePakage $tablePakage) => new PakageCategoryModel(
+                $tablePakage->getId(), $tablePakage->getName(), $tablePakage->getPricePakage(),$tablePakage->getDescription()
+            ),
+            $pakage
+        );
+
+        return new PakageAllListResponse($items);
+    }
+
 }

@@ -25,11 +25,25 @@ class SignUpService
         if ($this->userRepository->existsByEmail($signUpRequest->getEmail())) {
             throw new UserAlreadyExistsException();
         }
-
+        $user_id = $signUpRequest->getUserId();
+        $random_code = 'CP'.mt_rand();
+        $client_code = $user_id.$random_code;
+        $secret_code = mt_rand().'-'.mt_rand();
+        while($this->userRepository->existsByPesonalCode($client_code)){
+            $client_code = $user_id.$random_code;
+        }
+        while($this->userRepository->existsBySecretCode($secret_code)){
+            $secret_code = mt_rand().'-'.mt_rand();
+        }
         $user = (new User())
             ->setRoles(['ROLE_USER'])
             ->setFirstName($signUpRequest->getFirstName())
-            ->setLastName($signUpRequest->getLastName())
+            ->setUserId($user_id)
+            ->setReferralLink($signUpRequest->getReferralLink())
+            ->setPesonalCode($client_code)
+            ->setSecretCode($secret_code)
+            ->setCreatedAt(new \DateTime())
+            ->setUpdatedAt(new \DateTime())
             ->setEmail($signUpRequest->getEmail());
 
         $user->setPassword($this->hasher->hashPassword($user, $signUpRequest->getPassword()));
@@ -39,4 +53,5 @@ class SignUpService
 
         return $this->successHandler->handleAuthenticationSuccess($user);
     }
+
 }

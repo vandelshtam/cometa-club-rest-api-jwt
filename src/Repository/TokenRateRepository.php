@@ -2,27 +2,27 @@
 
 namespace App\Repository;
 
-use App\Entity\TablePakage;
+use App\Entity\TokenRate;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
- * @extends ServiceEntityRepository<TablePakage>
+ * @extends ServiceEntityRepository<TokenRate>
  *
- * @method TablePakage|null find($id, $lockMode = null, $lockVersion = null)
- * @method TablePakage|null findOneBy(array $criteria, array $orderBy = null)
- * @method TablePakage[]    findAll()
- * @method TablePakage[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method TokenRate|null find($id, $lockMode = null, $lockVersion = null)
+ * @method TokenRate|null findOneBy(array $criteria, array $orderBy = null)
+ * @method TokenRate[]    findAll()
+ * @method TokenRate[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class TablePakageRepository extends ServiceEntityRepository
+class TokenRateRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, TablePakage::class);
+        parent::__construct($registry, TokenRate::class);
     }
 
-    public function add(TablePakage $entity, bool $flush = false): void
+    public function add(TokenRate $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
 
@@ -31,7 +31,7 @@ class TablePakageRepository extends ServiceEntityRepository
         }
     }
 
-    public function remove(TablePakage $entity, bool $flush = false): void
+    public function remove(TokenRate $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
 
@@ -40,30 +40,26 @@ class TablePakageRepository extends ServiceEntityRepository
         }
     }
 
-    public function existsByName(string $name): bool
+
+    /**
+     * @return TokenRate[]
+     */
+    public function existsByAll(): array
     {
-        return null !== $this->findOneBy(['name' => $name]);
+        return $this->findBy([], ['id' => Criteria::ASC]);
     }
 
     /**
-     * @return PakageCategory[]
+     * @return TokenRateOne[]
      */
-    public function findByAllPakage(): array
+    public function getByTokenRate(int $id): array
     {
-        return $this->findBy([], ['name' => Criteria::ASC]);
-    }
-
-     /**
-     * @return TablePakageOne[]
-     */
-    public function getByTokenPakageOne(int $id): array
-    {
-        $table_pakage_one[] = $this->find($id);
-        return $table_pakage_one;
+        $token_rate[] = $this->find($id);
+        return $token_rate;
     }
 
 //    /**
-//     * @return TablePakage[] Returns an array of TablePakage objects
+//     * @return TokenRate[] Returns an array of TokenRate objects
 //     */
 //    public function findByExampleField($value): array
 //    {
@@ -77,7 +73,7 @@ class TablePakageRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?TablePakage
+//    public function findOneBySomeField($value): ?TokenRate
 //    {
 //        return $this->createQueryBuilder('t')
 //            ->andWhere('t.exampleField = :val')

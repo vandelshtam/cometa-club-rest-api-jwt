@@ -11,6 +11,7 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -26,9 +27,10 @@ class UserController extends AbstractController
      *     description="Update a user",
      *     @OA\JsonContent(
      *         @OA\Property(property="firstName", type="string"),
-     *         @OA\Property(property="lastName", type="string"),
+     *         @OA\Property(property="UserId", type="string"),
      *         @OA\Property(property="email", type="string"),
      *         @OA\Property(property="roles", type="string"),
+     *         @OA\Property(property="referralLink", type="string"),
      *         @OA\Property(property="password", type="string"),
      *     )
      * )
@@ -44,11 +46,11 @@ class UserController extends AbstractController
      * )
      * @OA\RequestBody(@Model(type=UserUpdateRequest::class))
      */
-    #[Route(path: '/api/v1/user/update', methods: ['POST'])]
-    public function userUpdate(#[RequestBody] UserUpdateRequest $userUpdateRequest, Request $request,EntityManagerInterface $entityManager,): Response
+    #[Route(path: '/api/v1/user/update/{user_id}', methods: ['POST'])]
+    public function userUpdate(#[RequestBody] UserUpdateRequest $userUpdateRequest, Request $request,EntityManagerInterface $entityManager): Response
     {
         $data = $request->query;
-        $id = $data->get('id');
-        return $this->json($this->userUpdateService->userUpdate($entityManager,$userUpdateRequest,$id));
+        $user_id = $data->get('id');
+        return $this->json($this->userUpdateService->userUpdate($entityManager,$userUpdateRequest,$user_id));
     }
 }

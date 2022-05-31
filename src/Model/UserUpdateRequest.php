@@ -12,11 +12,11 @@ class UserUpdateRequest
     #[NotBlank]
     private string $firstName;
 
-    #[NotBlank]
+    //#[NotBlank]
     private string $lastName;
 
     #[NotBlank]
-    private string $Roles;
+    private string $roles;
 
     #[Email]
     #[NotBlank]

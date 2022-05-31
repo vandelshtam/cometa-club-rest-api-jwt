@@ -20,10 +20,10 @@ class SignUpRequest
     private string $email;
 
     #[NotBlank]
-    private string $referral_link;
+    private string $referralLink;
 
     #[NotBlank]
-    private string $user_id;
+    private string $userId;
 
     #[NotBlank]
     #[Length(min: 8)]
@@ -74,9 +74,9 @@ class SignUpRequest
         return $this->referralLink;
     }
 
-    public function setReferralLink(string $referral_link): self
+    public function setReferralLink(string $referralLink): self
     {
-        $this->email = $referral_link;
+        $this->referralLink = $referralLink;
 
         return $this;
     }
@@ -86,9 +86,9 @@ class SignUpRequest
         return $this->userId;
     }
 
-    public function setUserId(string $user_id): self
+    public function setUserId(string $userId): self
     {
-        $this->userId = $user_id;
+        $this->userId = $userId;
 
         return $this;
     }
