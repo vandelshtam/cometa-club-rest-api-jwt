@@ -3,24 +3,18 @@
 namespace App\Service;
 
 use DateTime;
-use App\Entity\TokenRate;
 use App\Entity\SettingOptions;
-use App\Model\TokenRateRequest;
 use App\Model\SettingOptionsRequest;
-use App\Model\TokenRateListResponse;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Validator\Constraint;
-use App\Model\SettingOptions as SettingOptionsModel;
 use App\Repository\SettingOptionsRepository;
-use Symfony\Component\Validator\Constraints\DateTimeValidator;
 use App\Model\SettingOptionsRewiewListResponse;
 use App\Exception\TokenRateAlreadyExistsException;
+use App\Model\SettingOptions as SettingOptionsModel;
+use App\Exception\SettingOptionsFormatDateExistsException;
 
 class SettingOptionsService
 {
     public function __construct(private SettingOptionsRepository $settingOptionsRepository,
-                                private DateTimeValidator $dateTimeValidator,
-                                private Constraint $constraint,
                                 private EntityManagerInterface $em,
                                 )
     {
@@ -60,12 +54,15 @@ class SettingOptionsService
 
     public function update($entityManager,SettingOptionsRequest $settingOptionsRequest): SettingOptionsRewiewListResponse
     {
-        $errors = $this->dateTimeValidator->validate($settingOptionsRequest->getMultiPakageDay(), $this->constraint);
-        if ($errors) {
-            dd($errors) ;
-            //throw new TokenRateAlreadyExistsException();
-        }
+        $date_regex = '/^(19|20)\d\d[\-\/.](0[1-9]|1[012])[\-\/.](0[1-9]|[12][0-9]|3[01])$/';
 
+        if (!preg_match($date_regex, $settingOptionsRequest->getMultiPakageDay())) {
+            throw new SettingOptionsFormatDateExistsException();
+        } 
+        if (!preg_match($date_regex, $settingOptionsRequest->getFastStart())) {
+            throw new SettingOptionsFormatDateExistsException();
+        } 
+        
         $id = 1;
         $update_setting_options = $entityManager->getRepository(SettingOptions::class)->findOneBy(['id' => $id]);
         $update_setting_options -> setPaymentsSingleline($settingOptionsRequest->getPaymentsSingleline());

@@ -162,7 +162,32 @@ nelmio_api_doc:
                 post:
                     description: Updated setting options
                     tags:
-                        - Admin management          
+                        - Admin management
+            /api/v1/transaction/table/rewiew:
+                get:
+                    description: rewiew transaction table
+                    tags:
+                        - Admin management
+            /api/v1/transaction/table/{id}/rewiew:
+                get:
+                    description: rewiew transaction table by user
+                    tags:
+                        - Admin management 
+            /api/v1/transaction/table/rewiew/all:
+                get:
+                    description: rewiew all transaction table
+                    tags:
+                        - Admin management
+            /api/v1/transaction/table/rewiew/page:
+                get:
+                    description: rewiew all transaction table page
+                    tags:
+                        - Admin management
+            /api/v1/transaction/table/{date}/rewiew/date:
+                get:
+                    description: rewiew transaction table by date and page
+                    tags:
+                        - Admin management                             
         tags: 
            - name: Admin management
         #    - name: Package management
