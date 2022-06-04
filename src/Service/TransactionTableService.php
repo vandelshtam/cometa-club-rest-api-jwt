@@ -80,8 +80,37 @@ class TransactionTableService
             ->setWalletId($transactionTable->getWalletId())
             ->setSomme($transactionTable->getSomme())
             ->setToken($transactionTable->getToken())
-            // ->setCreatedAt(serialize($transactionTable->getCreatedAt()))
             ->setCreatedAt($transactionTable->getCreatedAt()->getTimestamp());
+    }
+
+    public function pakegeNew($pakage_user_price,$user_id,$pakage_id)
+    {
+        $transaction = new TransactionTable();
+        $transaction  -> setCreatedAt(new \DateTime());
+        $transaction  -> setUpdatedAt(new \DateTime()); 
+        $transaction -> setPakagePrice($pakage_user_price);
+        $transaction -> setUserId($user_id);
+        $transaction -> setPakageId($pakage_id);
+        $transaction -> setSomme($pakage_user_price);
+        $transaction -> setToken('usdt');
+        $transaction -> setType('new pakage');//type 7
+        $this->em->persist($transaction);
+        $this->em->flush();
+    }
+
+    public function walletAddCreate($summ,$user_id,$wallet_id,$type_opation)
+    {
+        $transaction = new TransactionTable();
+        $transaction  -> setCreatedAt(new \DateTime());
+        $transaction  -> setUpdatedAt(new \DateTime()); 
+        $transaction -> setPakagePrice($summ);
+        $transaction -> setUserId($user_id);
+        $transaction -> setWalletId($wallet_id);
+        $transaction -> setSomme($summ);
+        $transaction -> setToken($type_opation);
+        $transaction -> setType('add wallet');//type 24
+        $this->em->persist($transaction);
+        $this->em->flush();
     }
     
 }

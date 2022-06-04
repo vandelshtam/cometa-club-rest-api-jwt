@@ -26,7 +26,7 @@ class TransactionTableReview
 
     private int $networkActivationId;
 
-    private int $type;
+    private string $type;
 
     private int $pakagePrice;
 
@@ -172,12 +172,12 @@ class TransactionTableReview
         return $this;
     }
 
-    public function getType(): int
+    public function getType(): string
     {
         return $this->type;
     }
 
-    public function setType(int $type): self
+    public function setType(string $type): self
     {
         $this->type = $type;
 

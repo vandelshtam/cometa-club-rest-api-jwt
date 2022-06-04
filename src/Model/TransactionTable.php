@@ -28,7 +28,7 @@ class TransactionTable
 
     private int $networkActivationId;
 
-    private int $type;
+    private string $type;
 
     private int $pakagePrice;
 
@@ -123,7 +123,7 @@ class TransactionTable
         return $this->networkActivationId;
     }
 
-    public function getType(): int
+    public function getType(): string
     {
         return $this->type;
     }

@@ -1,9 +1,9 @@
 nelmio_api_doc:
     documentation:
         info:
-            title: Publisher API
-            description: API for publishing books and more 
-            version: 1.0.0
+            title: CoMeta Club API
+            description: API affiliate program for CoMetaClub
+            version: 1.0.0 beta
         security:
             - Bearer: []
         paths:
@@ -11,7 +11,7 @@ nelmio_api_doc:
                 get:
                     description: All pakages
                     tags:
-                        - Admin management
+                        - Admin management pakages table
                     # parameters:
                     #     - in: query
                     #       name: username
@@ -37,59 +37,17 @@ nelmio_api_doc:
                 get:
                     description: All table pakages
                     tags:
-                        - Admin management
-                    # parameters:
-                    #     - in: query
-                    #       name: username
-                    #       required: true
-                    #       schema:
-                    #         type: string
-                    #     - in: query
-                    #       name: password
-                    #       required: true
-                    #       schema:
-                    #         type: string
-            #         responses:
-            #             200:
-            #                 description: ok
-            #                 content: 
-            #                     application/json: 
-            #                         schema: 
-            #                             type: object
-            #                             properties:
-            #                                 email: { type: string, example: 'string'}
-            #                                 password: { type: string, example: 'string'}
+                        - Admin management pakages table
             /api/v1/table/pakage/new:
                 post:
                     description: New table pakage
                     tags:
-                        - Admin management
-                    # parameters:
-                    #     - in: query
-                    #       name: username
-                    #       required: true
-                    #       schema:
-                    #         type: string
-                    #     - in: query
-                    #       name: password
-                    #       required: true
-                    #       schema:
-                    #         type: string
-            #         responses:
-            #             200:
-            #                 description: ok
-            #                 content: 
-            #                     application/json: 
-            #                         schema: 
-            #                             type: object
-            #                             properties:
-            #                                 email: { type: string, example: 'string'}
-            #                                 password: { type: string, example: 'string'} 
+                        - Admin management pakages table
             /api/v1/table/pakage/update/{table_pakage_id}:
                 post:
                     description: Update table pakage
                     tags:
-                        - Admin management
+                        - Admin management pakages table
                     # parameters:
                     #     - in: query
                     #       name: id
@@ -100,99 +58,133 @@ nelmio_api_doc:
                 get:
                     description: User me
                     tags:
-                        - Admin management
-                    # parameters:
-                    #     - in: query
-                    #       name: username
-                    #       required: true
-                    #       schema:
-                    #         type: string
-                    #     - in: query
-                    #       name: password
-                    #       required: true
-                    #       schema:
-                    #         type: string
-            #         responses:
-            #             200:
-            #                 description: ok
-            #                 content: 
-            #                     application/json: 
-            #                         schema: 
-            #                             type: object
-            #                             properties:
-            #                                 email: { type: string, example: 'string'}
-            #                                 password: { type: string, example: 'string'} 
+                        - Admin management user
+            /api/v1/auth/signUp:
+                post:
+                    description: Registration user
+                    tags:
+                        - Admin management user
             /api/v1/user/update/{user_id}:
                 post:
                     description: User update
                     tags:
-                        - Admin management
-                    # parameters:
-                    #     - in: query
-                    #       name: id
-                    #       required: true
-                    #       schema:
-                    #         type: string
+                        - Admin management user
             /api/v1/token/rate/new:
                 post:
                     description: New token rate
                     tags:
-                        - Admin management 
+                        - Admin management token rate
             /api/v1/token/rate/update:
                 post:
                     description: New token rate
                     tags:
-                        - Admin management       
+                        - Admin management token rate       
             /api/v1/token/rate/rewiew:
                 get:
                     description: Rewiew token rate
                     tags:
-                        - Admin management     
+                        - Admin management token rate    
             /api/v1/setting/options/new:
                 post:
                     description: New setting options
                     tags:
-                        - Admin management     
+                        - Admin management setting options     
             /api/v1/setting/options/rewiew:
                 get:
                     description: Rewiew setting options
                     tags:
-                        - Admin management
+                        - Admin management setting options
             /api/v1/setting/options/update:
                 post:
                     description: Updated setting options
                     tags:
-                        - Admin management
-            /api/v1/transaction/table/rewiew:
-                get:
-                    description: rewiew transaction table
-                    tags:
-                        - Admin management
+                        - Admin management setting options
             /api/v1/transaction/table/{id}/rewiew:
                 get:
-                    description: rewiew transaction table by user
+                    description: Rewiew transaction table by user
                     tags:
-                        - Admin management 
+                        - Admin management transaction table 
+            /api/v1/transaction/table/{id}/rewiew/place:
+                get:
+                    description: Rewiew transaction table by user place in single line
+                    tags:
+                        - Admin management transaction table 
             /api/v1/transaction/table/rewiew/all:
                 get:
-                    description: rewiew all transaction table
+                    description: Rewiew all transaction table
                     tags:
-                        - Admin management
+                        - Admin management transaction table
             /api/v1/transaction/table/rewiew/page:
                 get:
-                    description: rewiew all transaction table page
+                    description: Rewiew all transaction table page
                     tags:
-                        - Admin management
-            /api/v1/transaction/table/{date}/rewiew/date:
+                        - Admin management transaction table
+            /api/v1/transaction/table/rewiew/date:
+                post:
+                    description: Rewiew transaction table by date and page
+                    tags:
+                        - Admin management transaction table
+            /api/v1/transaction/table/rewiew/type:
+                post:
+                    description: Returns all posts for type operations with pagination
+                    tags:
+                        - Admin management transaction table  
+            /api/v1/saving/mail/{id}/rewiew:
                 get:
-                    description: rewiew transaction table by date and page
+                    description: Rewiew saving mail table by user
                     tags:
-                        - Admin management                             
+                        - Admin management saving mail table
+            /api/v1/saving/mail/rewiew/email:
+                post:
+                    description: Rewiew saving mail table by to mail
+                    tags:
+                        - Admin management saving mail table  
+            /api/v1/saving/mail/rewiew/category:
+                get:
+                    description: Rewiew saving mail table by category
+                    tags:
+                        - Admin management saving mail table 
+            /api/v1/saving/mail/rewiew/date:
+                post:
+                    description: Rewiew saving mail table get all, dates less than the entered date and newer
+                    tags:
+                        - Admin management saving mail table    
+            /api/v1/saving/mail/rewiew/all/page:
+                get:
+                    description: Returns all posts with pagination
+                    tags:
+                        - Admin management saving mail table 
+            /api/v1/pakege/new:
+                post:
+                    description: Returns new pakege user
+                    tags:
+                        - Management pakege users 
+            /api/v1/admin/pakege/all/page:
+                get:
+                    description: Returns all pakeges users with pagination
+                    tags:
+                        - Admin management pakege users 
+            /api/v1/pakege/user:
+                post:
+                    description: Returns all pakeges users
+                    tags:
+                        - Management pakege users 
+            /api/v1/wallet/create:
+                post:
+                    description: Returns balance and last add summ
+                    tags:
+                        - Management wallet user                                                   
         tags: 
-           - name: Admin management
-        #    - name: Package management
-        #    - name: Network management 
-        #    - name: Referral management 
+           - name: Admin management pakages table
+           - name: Admin management saving mail table
+           - name: Admin management transaction table
+           - name: Admin management token rate
+           - name: Admin management setting options
+           - name: Admin management user
+           - name: Management pakege users
+           - name: Admin management pakege users
+           - name: Management wallet user
+        #   - name: Referral management 
         components:
             securitySchemes:
                     Bearer:

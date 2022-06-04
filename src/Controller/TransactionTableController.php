@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use DateTime;
+use App\Model\ErrorResponse;
 use OpenApi\Annotations as OA;
 use App\Service\TransactionTableService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -37,21 +38,64 @@ class TransactionTableController extends AbstractController
         ));
     }
 
+
     /**
      * @OA\Parameter(name="page", in="query", description="Page number", @OA\Schema(type="integer"))
+     * @OA\Response(
+     *     response=200,
+     *     description="Returns page of reviews for the given user",
+     *     @Model(type=TransactionTableReviewPage::class)
+     * )
+     */
+    #[Route(path: '/api/v1/transaction/table/{id}/rewiew/place', methods: ['GET'])]
+    public function rewiewPlace(int $id, Request $request): Response
+    {
+        return $this->json($this->transactionTableReviewService->getReviewPageByUserPlace(
+            $id, $request->query->get('page', 1)
+        ));
+    }
+
+    /**
+     * @OA\Parameter(name="page", in="query", description="Page number", @OA\Schema(type="integer"))
+     * @OA\Parameter(name="date", in="query", description="Enter the date in the format yyyy-mm-dd", required=true, @OA\Schema(type="string"))
      * @OA\Response(
      *     response=200,
      *     description="Returns page of reviews for the given date",
      *     @Model(type=TransactionTableReviewPage::class)
      * )
      */
-    #[Route(path: '/api/v1/transaction/table/{date}/rewiew/date', methods: ['GET'])]
-    public function rewiewDate(string $date, Request $request): Response
+    #[Route(path: '/api/v1/transaction/table/rewiew/date', methods: ['POST'])]
+    public function rewiewDate(Request $request): Response
     {
-        // $date_time = new DateTime('2022-05-30');
-        // dd($date_time);
         return $this->json($this->transactionTableReviewService->getReviewPageByDate(
-            $date, $request->query->get('page', 1)
+            $request->query->get('date'), $request->query->get('page', 1)
+        ));
+    }
+
+    /**
+     * @OA\Parameter(name="page", in="query", description="Page number", @OA\Schema(type="integer"))
+     * @OA\Parameter(name="type", in="query", description="Enter the name of the operation without signs and symbols, use only one space between words", required=true, @OA\Schema(type="string"))
+     * @OA\Response(
+     *     response=200,
+     *     description="Returns page of reviews for the given date",
+     *     @Model(type=TransactionTableReviewPage::class)
+     * )
+     * @OA\Response(
+     *     response="404",
+     *     description="Error, requested data not found",
+     *     @Model(type=ErrorResponse::class)
+     * )
+     * @OA\Response(
+     *     response="400",
+     *     description="Validation failed",
+     *     @Model(type=ErrorResponse::class)
+     * )
+     */
+    #[Route(path: '/api/v1/transaction/table/rewiew/type', methods: ['POST'])]
+    public function rewiewType(Request $request): Response
+    {
+        return $this->json($this->transactionTableReviewService->getReviewPageByType(
+            $request->query->get('type'), $request->query->get('page', 1)
         ));
     }
 

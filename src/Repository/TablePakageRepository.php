@@ -45,6 +45,11 @@ class TablePakageRepository extends ServiceEntityRepository
         return null !== $this->findOneBy(['name' => $name]);
     }
 
+    public function existsByPakageId(int $pakage_id): bool
+    {
+        return null !== $this->findOneBy(['id' => $pakage_id]);
+    }
+
     /**
      * @return PakageCategory[]
      */

@@ -99,7 +99,7 @@ class SettingOptionsController extends AbstractController
      * )
      * @OA\Response(
      *     response="409",
-     *     description="Failed to create new record, only one setting options record can be created",
+     *     description="Error ",
      *     @Model(type=ErrorResponse::class)
      * )
      * @OA\Response(

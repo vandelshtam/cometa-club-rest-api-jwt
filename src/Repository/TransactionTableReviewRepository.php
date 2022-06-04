@@ -29,6 +29,36 @@ class TransactionTableReviewRepository extends ServiceEntityRepository
         return $this->count(['user_id' => $id]);
     }
 
+    public function countByUserPlace(int $id): int
+    {
+        return $this->count(['network_id' => $id]);
+    }
+
+    public function countByType(string $type): int
+    {
+        return $this->count(['type' => $type]);
+    }
+
+    public function existsByDate($date): bool
+    {
+        return null !== $this->findOneBy(['created_at' => $date]);
+    }
+
+    public function existsByUserId(string $id): bool
+    {
+        return null !== $this->findOneBy(['user_id' => $id]);
+    }
+
+    public function existsByUserPlace(string $id): bool
+    {
+        return null !== $this->findOneBy(['network_id' => $id]);
+    }
+
+    public function existsByTypeTable(string $type): bool
+    {
+        return null !== $this->findOneBy(['type' => $type]);
+    }
+
     public function getBookTotalRatingSum(int $id): int
     {
         return (int) $this->_em->createQuery('SELECT SUM(r.rating) FROM App\Entity\Review r WHERE r.book = :id')
@@ -49,6 +79,35 @@ class TransactionTableReviewRepository extends ServiceEntityRepository
 
         return new Paginator($query, false);
     }
+
+    /**
+     * @return Traversable&Countable
+     */
+    public function getPageByUserPlace(int $id, int $offset, int $limit)
+    {
+        $query = $this->_em
+            ->createQuery('SELECT r FROM App\Entity\TransactionTable r WHERE r.network_id = :id ORDER BY r.created_at DESC')
+            ->setParameter('id', $id)
+            ->setFirstResult($offset)
+            ->setMaxResults($limit);
+
+        return new Paginator($query, false);
+    }
+
+    /**
+     * @return Traversable&Countable
+     */
+    public function getPageByType(string $type, int $offset, int $limit)
+    {
+        $query = $this->_em
+            ->createQuery('SELECT r FROM App\Entity\TransactionTable r WHERE r.type = :id ORDER BY r.created_at DESC')
+            ->setParameter('id', $type)
+            ->setFirstResult($offset)
+            ->setMaxResults($limit);
+
+        return new Paginator($query, false);
+    }
+
 
     /**
      * @return Traversable&Countable
