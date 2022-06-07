@@ -98,13 +98,14 @@ class TransactionTableService
         $this->em->flush();
     }
 
-    public function walletAddCreate($summ,$user_id,$wallet_id,$type_opation)
+    public function walletAdd($summ,$user_id,$wallet_id,$type_opation,$parent_user_id)
     {
         $transaction = new TransactionTable();
         $transaction  -> setCreatedAt(new \DateTime());
         $transaction  -> setUpdatedAt(new \DateTime()); 
         $transaction -> setPakagePrice($summ);
         $transaction -> setUserId($user_id);
+        $transaction -> setParentUserId($parent_user_id);
         $transaction -> setWalletId($wallet_id);
         $transaction -> setSomme($summ);
         $transaction -> setToken($type_opation);

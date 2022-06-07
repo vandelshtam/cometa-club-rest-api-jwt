@@ -20,6 +20,9 @@ class TransactionTable
     private $user_id;
 
     #[ORM\Column(type: 'integer', nullable: true)]
+    private $parent_user_id;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
     private $pakage_id;
 
     #[ORM\Column(type: 'integer', nullable: true)]
@@ -89,6 +92,18 @@ class TransactionTable
     public function setUserId(?int $user_id): self
     {
         $this->user_id = $user_id;
+
+        return $this;
+    }
+
+    public function getParentUserId(): ?int
+    {
+        return $this->parent_user_id;
+    }
+
+    public function setParentUserId(?int $parent_user_id): self
+    {
+        $this->parent_user_id = $parent_user_id;
 
         return $this;
     }

@@ -19,9 +19,9 @@ class JwtUserProvider implements PayloadAwareUserProviderInterface
         return $this->getUser('email', $identifier);
     }
 
-    public function loadUserByIdentifierAndPayload(string $identifier, array $payload): UserInterface
+    public function loadUserByIdentifierAndPayload(string $identifier): UserInterface
     {
-        return $this->getUser('id', $payload['id']);
+        return $this->getUser('email', $identifier);
     }
 
     // deprecated

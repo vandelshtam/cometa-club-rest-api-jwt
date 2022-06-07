@@ -13,10 +13,8 @@ class PakegeRequest
     #[NotBlank]
     private int $pakage_id;
 
-    #[Email]
-    private string $email;
-
-    private string $referral_link;
+    #[NotBlank]
+    private string $type_token;
 
     
     public function getUserId(): int
@@ -43,27 +41,16 @@ class PakegeRequest
         return $this;
     }
 
-    public function getEmail(): string
+    public function getTypeToken(): string
     {
-        return $this->email;
+        return $this->type_token;
     }
 
-    public function setEmail(string $email): self
+    public function setTypeToken(string $type_token): self
     {
-        $this->email = $email;
+        $this->type_token = $type_token;
 
         return $this;
     }
 
-    public function getReferralLink(): string
-    {
-        return $this->referral_link;
-    }
-
-    public function setReferralLink(string $referral_link): self
-    {
-        $this->referral_link = $referral_link;
-
-        return $this;
-    }
 }

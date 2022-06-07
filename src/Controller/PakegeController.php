@@ -5,11 +5,11 @@ namespace App\Controller;
 use DateTime;
 use App\Model\ErrorResponse;
 use App\Model\PakegeRequest;
-use App\Model\PakegeUserRequest;
 use App\Attribute\RequestBody;
 use App\Service\PakegeService;
 use OpenApi\Annotations as OA;
 use App\Model\PakegeReviewPage;
+use App\Model\PakegeUserRequest;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -17,8 +17,9 @@ use App\Model\SavingMailRewiewListResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class PakegeController extends AbstractController
 {
@@ -56,10 +57,10 @@ class PakegeController extends AbstractController
      * @OA\RequestBody(@Model(type=PakegeRequest::class))
      */
     #[Route(path: '/api/v1/pakege/new', methods: ['POST'])]
-    public function new(#[RequestBody] PakegeRequest $pakegeRequest,ManagerRegistry $doctrine): Response
+    public function new(#[RequestBody] PakegeRequest $pakegeRequest,ManagerRegistry $doctrine,UserInterface $user): Response
     {
-        //dd($user);
-        return $this->json($this->pakegeService->pakegeNew($pakegeRequest,$doctrine));
+        $current_user = $user;
+        return $this->json($this->pakegeService->pakegeNew($pakegeRequest,$doctrine,$current_user));
     }
 
     /**
@@ -92,9 +93,10 @@ class PakegeController extends AbstractController
      * @OA\RequestBody(@Model(type=PakegeUserRequest::class))
      */
     #[Route(path: '/api/v1/pakege/user', methods: ['POST'])]
-    public function pakegesUser(#[RequestBody] PakegeUserRequest $pakegeUserRequest): Response
+    public function pakegesUser(#[RequestBody] PakegeUserRequest $pakegeUserRequest,UserInterface $user): Response
     {
-        return $this->json($this->pakegeService->pakegesUser($pakegeUserRequest));
+        $current_user = $user;
+        return $this->json($this->pakegeService->pakegesUser($pakegeUserRequest,$current_user));
     }
 
     // /**

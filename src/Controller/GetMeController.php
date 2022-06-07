@@ -14,7 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class GetMeController extends AbstractController
 {
     #[Route(path: '/api/v1/get/me', methods: ['POST'])]
-    public function getAuthUser(#[CurrentUser] UserInterface $user): Response
+    public function getAuthUser( UserInterface $user): Response
     {
         // /** @var AuthUserInterface $user */
         // $user = $this->security->getUser();

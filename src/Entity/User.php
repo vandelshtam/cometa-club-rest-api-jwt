@@ -21,9 +21,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string')]
     private string $firstName;
 
-    #[ORM\Column(type: 'string', nullable: true)]
-    private string $lastName;
-
     #[ORM\Column(type: 'string', unique: true)]
     private string $email;
 
@@ -55,9 +52,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $pakage_status;
 
     #[ORM\Column(type: 'integer', nullable: true)]
-    private $pakage_id;
-
-    #[ORM\Column(type: 'integer', nullable: true)]
     private $multi_pakage;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
@@ -80,18 +74,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setFirstName(string $firstName): self
     {
         $this->firstName = $firstName;
-
-        return $this;
-    }
-
-    public function getLastName(): string
-    {
-        return $this->lastName;
-    }
-
-    public function setLastName(string $lastName): self
-    {
-        $this->lastName = $lastName;
 
         return $this;
     }
@@ -241,18 +223,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPakageStatus(?int $pakage_status): self
     {
         $this->pakage_status = $pakage_status;
-
-        return $this;
-    }
-
-    public function getPakageId(): ?int
-    {
-        return $this->pakage_id;
-    }
-
-    public function setPakageId(?int $pakage_id): self
-    {
-        $this->pakage_id = $pakage_id;
 
         return $this;
     }

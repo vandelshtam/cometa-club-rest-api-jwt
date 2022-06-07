@@ -169,11 +169,41 @@ nelmio_api_doc:
                     description: Returns all pakeges users
                     tags:
                         - Management pakege users 
-            /api/v1/wallet/create:
+            /api/v1/wallet/add:
                 post:
                     description: Returns balance and last add summ
                     tags:
-                        - Management wallet user                                                   
+                        - Management wallet user  
+            /api/v1/wallet/user:
+                get:
+                    description: Returns balance wallet user
+                    tags:
+                        - Management wallet user  
+            /api/v1/admin/wallet/all:
+                get:
+                    description: Returns balance all wallet users
+                    tags:
+                        - Admin management wallet  
+            /api/v1/admin/wallet/all/page:
+                get:
+                    description: Returns balance all wallet users page by
+                    tags:
+                        - Admin management wallet  
+            /api/v1/admin/wallet/user:
+                get:
+                    description: Returns balance wallet user
+                    tags:
+                        - Admin management wallet  
+            /api/v1/admin/wallet/user_id:
+                get:
+                    description: Returns balance wallet userId
+                    tags:
+                        - Admin management wallet  
+            /api/v1/auth/signUpCreate:
+                post:
+                    description: Returns new user
+                    tags:
+                        - Management user                                                        
         tags: 
            - name: Admin management pakages table
            - name: Admin management saving mail table
@@ -184,6 +214,8 @@ nelmio_api_doc:
            - name: Management pakege users
            - name: Admin management pakege users
            - name: Management wallet user
+           - name: Admin management wallet
+           - name: Management user
         #   - name: Referral management 
         components:
             securitySchemes:

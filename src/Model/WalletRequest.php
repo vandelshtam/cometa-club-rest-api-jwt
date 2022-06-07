@@ -16,16 +16,7 @@ class WalletRequest
 
     #[NotBlank]
     private string $type;
-
-    #[NotBlank]
-    #[Email]
-    private string $email;
-
-    #[NotBlank]
-    private string $referral_link;
-
-
-    
+  
     public function getUserId(): int
     {
         return $this->user_id;
@@ -63,27 +54,27 @@ class WalletRequest
         return $this;
     }
 
-    public function getEmail(): string
-    {
-        return $this->email;
-    }
+    // public function getEmail(): string
+    // {
+    //     return $this->email;
+    // }
 
-    public function setEmail(string $email): self
-    {
-        $this->email = $email;
+    // public function setEmail(string $email): self
+    // {
+    //     $this->email = $email;
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
-    public function getReferralLink(): string
-    {
-        return $this->referral_link;
-    }
+    // public function getReferralLink(): string
+    // {
+    //     return $this->referral_link;
+    // }
 
-    public function setReferralLink(string $referral_link): self
-    {
-        $this->referral_link = $referral_link;
+    // public function setReferralLink(string $referral_link): self
+    // {
+    //     $this->referral_link = $referral_link;
 
-        return $this;
-    }
+    //     return $this;
+    // }
 }

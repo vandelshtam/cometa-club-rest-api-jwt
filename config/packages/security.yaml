@@ -29,14 +29,16 @@ security:
             jwt: ~
             refresh_jwt:
                 check_path: api_refresh_token
+            #custom_authenticator: App\Security\ApiLoginAuthenticator
 
     access_control:
-        - { path: ^/api/v1/admin, roles: ROLE_ADMIN }
+        #- { path: ^/api/v1/admin, roles: ROLE_ADMIN }
         - { path: ^/api/v1/author, roles: ROLE_ADMIN }
         - { path: ^/api/v1/user, roles: ROLE_USER }
         - { path: ^/api/v1/pakege, roles: ROLE_USER }
         #- { path: ^/api/v1/user, roles: PUBLIC_ACCESS }
         - { path: ^/api/v1/table/pakage, roles: PUBLIC_ACCESS }
+        #- { path: ^/api/v1/wallet, roles: IS_AUTHENTICATED_FULLY}
         - { path: ^/api,       roles: PUBLIC_ACCESS }
 
 when@test:

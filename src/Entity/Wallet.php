@@ -16,6 +16,9 @@ class Wallet
     #[ORM\Column(type: 'integer', nullable: true)]
     private $user_id;
 
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private $parent_user_id;
+
     #[ORM\Column(type: 'float', nullable: true)]
     private $usdt;
 
@@ -47,6 +50,18 @@ class Wallet
     public function setUserId(?int $user_id): self
     {
         $this->user_id = $user_id;
+
+        return $this;
+    }
+
+    public function getParentUserId(): ?int
+    {
+        return $this->parent_user_id;
+    }
+
+    public function setParentUserId(?int $parent_user_id): self
+    {
+        $this->parent_user_id = $parent_user_id;
 
         return $this;
     }

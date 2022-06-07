@@ -8,94 +8,109 @@ use App\Entity\Wallet;
 use App\Entity\TokenRate;
 use App\Entity\TablePakage;
 use App\Model\WalletRequest;
+use App\Security\UserService;
 use App\Service\MailerService;
-use App\Security\GetMeUser;
-use App\Service\SignUpService;
-use App\Model\PakegeReviewPage;
+//use App\Service\SignUpService;
+use Doctrine\ORM\EntityManager;
 use App\Repository\UserRepository;
 use App\Model\PakageAllListResponse;
-use App\Model\Pakege as PakegeModel;
 use App\Model\PakegeAllListResponse;
+use App\Model\Wallet as WalletModel;
+use App\Model\WalletReviewPage;
+use App\Model\WalletAllListResponse;
 use App\Repository\PakegeRepository;
 use App\Repository\WalletRepository;
+use App\Exception\UserNotFoundException;
 use App\Service\TransactionTableService;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\TablePakageRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Exception\WalletNotExistsException;
+use Symfony\Component\Security\Core\Security;
+use App\Exception\TypeTokenNotExistsException;
+use Symfony\Component\HttpFoundation\Response;
 use App\Exception\PakegeUserNotExistsException;
-use App\Model\PakegeReview as PakegeReviewModel;
+use App\Model\WalletReview as WalletReviewModel;
 use App\Exception\ReferralLinkNotExistsException;
 use App\Exception\TablePakageIdNotFoundException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Exception\TablePakageAlreadyExistsException;
+use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
-class WalletService
+class WalletService extends AbstractController
 {
     private const PAGE_LIMIT = 5;
+
+    /** @var  TokenStorageInterface */
+    private $tokenStorage;
+    /**
+     * @param TokenStorageInterface  $storage
+     */
+    
 
     public function __construct(private UserRepository $userRepository,
                                 private WalletRepository $walletRepository,
                                 private ManagerRegistry $doctrine,
                                 private EntityManagerInterface $entityManager, 
-                                private SignUpService $signUpService,
+                                //private SignUpService $signUpService,
                                 private EntityManagerInterface $em,
                                 private TransactionTableService $transactionTableService,
                                 private MailerService $mailerService,
+                                private UserService $userService,
                                 )
     {
+    
     }
 
-    public function walletAddCreate($walletRequest,$doctrine)
+    public function walletAdd($walletRequest,$doctrine,$current_user)
     {
-        //$this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-        // if (!$this->userRepository->existsByName($pakegeRequest->getReferralLink())) {
-        //     throw new ReferralLinkNotExistsException();
-        // }
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         
         $entityManager = $doctrine->getManager(); 
         if (null === $this->userRepository->findOneBy(['user_id' => $walletRequest->getUserId()])) {
-            $user = $this->signUpService->signUserWalletNew($walletRequest);
+            throw new UserNotFoundException();
         }
-        else{
-            $user = $this->userRepository->findOneBy(['user_id' => $walletRequest->getUserId()]);
+        
+        $user_id = $current_user->getId();
+        $parent_user_id = $walletRequest->getUserId();
+        $wallet = $this->walletRepository->getExsistsByWallet($user_id);
+        
+        if ($wallet->getParentUserId() != $walletRequest->getUserId()) {
+            //throw new WalletNotExistsException();
+            $this->denyAccessUnlessGranted('ROLE_ADMIN');
         }
-
-        // if (!$this->tablePakageRepository->existsByPakageId($walletRequest->getPakageId())) {
-        //     throw new TablePakageIdNotFoundException();
-        // }
+        $type = trim($walletRequest->getType(), '/.*:;,)([]$%');
+        
         $type_token = [
                         '1' => 'usdt',
                         '2' => 'bitcoin',
                         '3' => 'etherium',
+                        '4' => 'cometapoin',
                       ];
-        
-        //$token_rate =  $entityManager->getRepository(TokenRate::class)->findOneBy(['id' => 1]) -> getExchangeRate();
-        // $pakage_table = $entityManager->getRepository(TablePakage::class)->findOneBy(['id' => $walletRequest->getPakageId()]);
-        // $pakage_name_table = $pakage_table -> getName();
-        // $pakage_user_price = $pakage_table -> getPricePakage();
-        // $price_token = $pakage_user_price * $token_rate;
-        // $client_code = $user -> getPesonalCode();
-        // $price_usdt = $pakage_table -> getPricePakage();
-        
-        //создание кошелька пользователя
-        $wallet = new Wallet();
-        $wallet -> setUserId($user->getUserId());
+                      
+        // if (!in_array($type, $type_token)) {
+        //     throw new TypeTokenNotExistsException();
+        // }              
+
+        //запись нового баланса в кошелек пользователя
+        $current_bitcoin = $wallet -> getBitcoin();
+        $current_etherium = $wallet -> getEtherium();
+        $current_cometapoin = $wallet -> getCometapoin();
+        $current_usdt = $wallet -> getUsdt();
         if($walletRequest->getType() == '1'){
-            $wallet -> setUsdt($walletRequest->getSumm());
-            $wallet -> setBitcoin(0.00);
-            $wallet -> setEtherium(0.00);
-            $wallet -> setCometapoin(0.00);
+            $wallet -> setUsdt($current_usdt + $walletRequest->getSumm());
         }
         elseif($walletRequest->getType() == '2'){
-            $wallet -> setUsdt(0.00);
-            $wallet -> setBitcoin($walletRequest->getSumm());
-            $wallet -> setEtherium(0.00);
-            $wallet -> setCometapoin(0.00);
+            $wallet -> setBitcoin($current_bitcoin + $walletRequest->getSumm());
         }
-        else{
-            $wallet -> setUsdt(0.00);
-            $wallet -> setBitcoin(0.00);
-            $wallet -> setEtherium($walletRequest->getSumm());
-            $wallet -> setCometapoin(0.00);
+        elseif($walletRequest->getType() == '3'){
+            $wallet -> setEtherium($current_etherium + $walletRequest->getSumm());
+        }
+        elseif($walletRequest->getType() == '4'){
+            $wallet -> setCometapoin($current_cometapoin + $walletRequest->getSumm());
         }
         $wallet -> setCreatedAt((new \DateTimeImmutable()));
         $wallet -> setUpdatedAt((new \DateTimeImmutable()));
@@ -103,13 +118,13 @@ class WalletService
         $this->em->flush();
 
         //запись в таблицу тразакций
-        $wallet_id = $entityManager->getRepository(Wallet::class)->findOneBy(['user_id' => $user->getUserId()])->getId();
+        $wallet_id = $entityManager->getRepository(Wallet::class)->findOneBy(['user_id' => $user_id])->getId();
         $type_opation = $type_token[$walletRequest->getType()]; 
         $summ = $walletRequest->getSumm();
-        $this->transactionTableService->walletAddCreate($summ,$user->getUserId(),$wallet_id,$type_opation);
+        $this->transactionTableService->walletAdd($summ,$user_id,$wallet_id,$type_opation,$parent_user_id);
 
         //отправка электронного письма с подтверждением
-        $notice_mailer = $this->mailerService->sendEmailAddWallet($user->getUserId(),$user->getEmail(),$summ,$type_opation);
+        $notice_mailer = $this->mailerService->sendEmailAddWallet($user_id,$current_user->getEmail(),$summ,$type_opation);
 
         $notice = [
                     'success' =>'Congratulations! You have successfully replenished your wallet.'
@@ -121,59 +136,134 @@ class WalletService
         return $wallet_new;
     }
 
-    public function pakegesUser($pakegeUserRequest): PakegeAllListResponse
+    public function walletCreate($new_user,$user_id,$doctrine)
     {
-        if (!$this->pakegeRepository->existsByPakegeUserId($pakegeUserRequest->getUserId())) {
-            throw new PakegeUserNotExistsException();
-        }
-        
-        $user = $this->userRepository->getUserId($pakegeUserRequest->getUserId($pakegeUserRequest->getUserId()));
-
-        $pakeges = $this->pakegeRepository->findByExampleField($pakegeUserRequest->getUserId());
-
-        $items = array_map(
-            fn (Pakege $pakege) => new PakegeModel(
-                $pakege->getId(), $pakege->getUserId(), $pakege->getName(), $pakege->getPrice(),$pakege->getToken(),
-                $pakege->getClientCode(), $pakege->getReferralLink(), $pakege->getActivation(),$pakege->getAction(),$pakege->getCreatedAt(),$pakege->getUpdatedAt()
-            ),
-            $pakeges
-        );
-        
-        $info = $this->getReviewPageByUserId($pakegeUserRequest->getUserId());
-        $items[] = $info;
-        return new PakegeAllListResponse($items);
-    }
-
-    public function update($entityManager,$tablePakageRequest,$table_pakage_id): PakageAllListResponse
-    {
-        $update_pakage = $entityManager->getRepository(TablePakage::class)->findOneBy(['id' => $table_pakage_id]);
-        $update_pakage -> setName($tablePakageRequest->getName());
-        $update_pakage -> setPricePakage($tablePakageRequest->getPricePakage());
-        $update_pakage -> setDescription($tablePakageRequest->getDescription());
-        $update_pakage -> setUpdatedAt((new \DateTime()));
-
-        $this->em->persist($update_pakage);
+        //создание кошелька пользователя
+        $wallet = new Wallet();
+        $wallet -> setUserId($new_user->getId());
+        $wallet -> setParentUserId($user_id);
+        $wallet -> setUsdt(0.00);
+        $wallet -> setBitcoin(0.00);
+        $wallet -> setEtherium(0.00);
+        $wallet -> setCometapoin(0.00);
+        $wallet -> setCreatedAt((new \DateTimeImmutable()));
+        $wallet -> setUpdatedAt((new \DateTimeImmutable()));
+        $this->em->persist($wallet);
         $this->em->flush();
 
-        $pakage = $this->tablePakageRepository->getByTokenPakageOne($table_pakage_id);
-        $items = array_map(
-            fn (TablePakage $tablePakage) => new PakageCategoryModel(
-                $tablePakage->getId(), $tablePakage->getName(), $tablePakage->getPricePakage(),$tablePakage->getDescription()
-            ),
-            $pakage
-        );
-
-        return new PakageAllListResponse($items);
+        return $wallet;
     }
 
-    public function getReviewPageBy(int $page): PakegeReviewPage
+
+    public function walletAll(): WalletAllListResponse
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        $wallet = $this->walletRepository->findByAllTWallet();
+
+        $items = array_map(
+            fn (Wallet $wallet) => new WalletModel(
+                $wallet->getId(), $wallet->getUserId(), $wallet->getUsdt(), $wallet->getBitcoin(),$wallet->getEtherium(),
+                $wallet->getCometapoin(), $wallet->getUpdatedAt()
+            ),
+            $wallet
+        );
+
+        return new WalletAllListResponse($items);
+    }
+
+    // public function walletUser($current_user): WalletAllListResponse
+    // {
+    //     $this->denyAccessUnlessGranted('ROLE_ADMIN');
+    //     $user_id = $current_user -> getId();
+    //     $this->walletRepository->getExsistsByWallet($user_id); 
+    //     $wallet = $this->walletRepository->findByWalletUser($user_id);
+    //     if (null === $current_user) {
+    //         throw new UserNotFoundException();
+    //     }
+        
+    //     $items = array_map(
+    //         fn (Wallet $wallet) => new WalletModel(
+    //             $wallet->getId(), $wallet->getUserId(), $wallet->getUsdt(), $wallet->getBitcoin(),$wallet->getEtherium(),
+    //             $wallet->getCometapoin(), $wallet->getUpdatedAt()
+    //         ),
+    //         $wallet
+    //     );
+
+    //     return new WalletAllListResponse($items);
+    // }
+
+
+    public function walletReviewUser(int $wallet_id): WalletAllListResponse
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        
+        $this->walletRepository->getExsistsByWalletId($wallet_id); 
+        $wallet = $this->walletRepository->findByWalletId($wallet_id);
+        
+        $items = array_map(
+            fn (Wallet $wallet) => new WalletModel(
+                $wallet->getId(), $wallet->getUserId(), $wallet->getUsdt(), $wallet->getBitcoin(),$wallet->getEtherium(),
+                $wallet->getCometapoin(), $wallet->getUpdatedAt()
+            ),
+            $wallet
+        );
+
+        return new WalletAllListResponse($items);
+    }
+
+    public function walletReviewUserId(int $user_id): WalletAllListResponse
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        
+        $this->walletRepository->getExsistsByWallet($user_id); 
+        $wallet = $this->walletRepository->findByWalletUserId($user_id);
+        
+        $items = array_map(
+            fn (Wallet $wallet) => new WalletModel(
+                $wallet->getId(), $wallet->getUserId(), $wallet->getUsdt(), $wallet->getBitcoin(),$wallet->getEtherium(),
+                $wallet->getCometapoin(), $wallet->getUpdatedAt()
+            ),
+            $wallet
+        );
+
+        return new WalletAllListResponse($items);
+    }
+
+    public function wallet($current_user): WalletAllListResponse
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        
+        if (null === $current_user) {
+            throw new UserNotFoundException();
+        }
+        $user_id = $current_user->getId();
+        
+        $this->walletRepository->getExsistsByWallet($user_id); 
+        $wallet = $this->walletRepository->findByWalletUserId($user_id);
+        
+        $items = array_map(
+            fn (Wallet $wallet) => new WalletModel(
+                $wallet->getId(), $wallet->getUserId(), $wallet->getUsdt(), $wallet->getBitcoin(),$wallet->getEtherium(),
+                $wallet->getCometapoin(), $wallet->getUpdatedAt()
+            ),
+            $wallet
+        );
+
+        return new WalletAllListResponse($items);
+    }
+
+
+    public function getReviewPageBy(int $page): WalletReviewPage
     {
         $offset = max($page - 1, 0) * self::PAGE_LIMIT;
-        $paginator = $this->pakegeRepository->getPageBy($offset, self::PAGE_LIMIT);
+        $paginator = $this->walletRepository->getPageBy($offset, self::PAGE_LIMIT);
         $items = [];
 
-        $total_users_pakeges = count($this->pakegeRepository->findByAllPakege());
-        $total_users_price_pakeges = $this->pakegeRepository->getPakegeAllTotalPriceSum();
+        $total_wallet = count($this->walletRepository->findByAllWallet());
+        $total_usdt = $this->walletRepository->getWalletTotalUsdt();
+        $total_bitcoin = $this->walletRepository->getWalletTotalBitcoin();
+        $total_etherium = $this->walletRepository->getWalletTotalEtherium();
+        $total_cometapoin = $this->walletRepository->getWalletTotalCometapoin();
 
 
         foreach ($paginator as $item) {
@@ -181,49 +271,29 @@ class WalletService
         }
 
 
-        return (new PakegeReviewPage())
+        return (new WalletReviewPage())
             ->setPage($page)
-            ->setTotal($total_users_pakeges)
-            ->setAllPrice($total_users_price_pakeges)
+            ->setTotalWallet($total_wallet)
+            ->setTotalUsdt($total_usdt)
+            ->setTotalBitcoin($total_bitcoin)
+            ->setTotalEtherium($total_etherium)
+            ->setTotalCometapoin($total_cometapoin)
             ->setPerPage(self::PAGE_LIMIT)
-            ->setPages(ceil($total_users_pakeges / self::PAGE_LIMIT))
+            ->setPages(ceil($total_wallet / self::PAGE_LIMIT))
             ->setItems($items);
     }
 
-    public function getReviewPageByUserId(int $user_id): PakegeReviewPage
+
+    public function map(Wallet $wallet): WalletReviewModel
     {
-    
-        $total_users_pakeges = $this->pakegeRepository->countByUserId($user_id);
-        $total_users_price_pakeges = $this->pakegeRepository->getPakegeTotalPriceSum($user_id);
-
-
-        // foreach ($pakeges as $item) {
-        //     $items[] = $this->map($item);
-        // }
-
-
-        return (new PakegeReviewPage())
-            ->setTotal($total_users_pakeges)
-            ->setAllPrice($total_users_price_pakeges)
-            //->setItems($items)
-            ;
-    }
-
-
-
-    public function map(Pakege $pakege): PakegeReviewModel
-    {
-        return (new PakegeReviewModel())
-            ->setId($pakege->getId())
-            ->setUserId($pakege->getUserId())
-            ->setName($pakege->getName())
-            ->setPrice($pakege->getPrice())
-            ->setReferralLink($pakege->getReferralLink())
-            ->setToken($pakege->getToken())
-            ->setClientCode($pakege->getClientCode())
-            ->setActivation($pakege->getActivation())
-            ->setAction($pakege->getAction())
-            ->setCreatedAt($pakege->getCreatedAt()->getTimestamp());
+        return (new WalletReviewModel())
+            ->setId($wallet->getId())
+            ->setUserId($wallet->getUserId())
+            ->setUsdt($wallet->getUsdt())
+            ->setBitcoin($wallet->getBitcoin())
+            ->setEtherium($wallet->getEtherium())
+            ->setCometapoin($wallet->getCometapoin())
+            ->setCreatedAt($wallet->getUpdatedAt()->getTimestamp());
     }
 
 }

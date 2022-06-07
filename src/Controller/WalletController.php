@@ -10,8 +10,9 @@ use App\Attribute\RequestBody;
 use App\Service\PakegeService;
 use App\Service\WalletService;
 use OpenApi\Annotations as OA;
-use App\Model\PakegeReviewPage;
+use App\Model\WalletReviewPage;
 use App\Model\PakegeUserRequest;
+use App\Model\WalletAllListResponse;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -19,6 +20,8 @@ use App\Model\SavingMailRewiewListResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -55,52 +58,51 @@ class WalletController extends AbstractController
      * )
      * @OA\RequestBody(@Model(type=WalletRequest::class))
      */
-    #[Route(path: '/api/v1/wallet/create', methods: ['POST'])]
-    public function walletCreate(#[RequestBody] WalletRequest $walletRequest,ManagerRegistry $doctrine): Response
+    #[Route(path: '/api/v1/wallet/add', methods: ['POST'])]
+    public function walletCreate(#[RequestBody] WalletRequest $walletRequest,ManagerRegistry $doctrine,UserInterface $user): Response
     {
-        return $this->json($this->walletService->walletAddCreate($walletRequest,$doctrine));
+        $current_user = $user;
+        return $this->json($this->walletService->walletAdd($walletRequest,$doctrine,$current_user));
+       
     }
 
-    // /**
-    //  * @OA\Response(
-    //  *     response=200,
-    //  *     description="Review user pakeges",
-    //  *     @OA\JsonContent(
-    //  *         @OA\Property(property="id", type="integer"),
-    //  *         @OA\Property(property="user_id", type="integer"),
-    //  *         @OA\Property(property="name", type="string"),
-    //  *         @OA\Property(property="referral_link", type="string"),
-    //  *         @OA\Property(property="price", type="integer"),
-    //  *         @OA\Property(property="token", type="integer"),
-    //  *         @OA\Property(property="referral_networks_id", type="string"),
-    //  *         @OA\Property(property="client_code", type="string"),
-    //  *         @OA\Property(property="action", type="string"),
-    //  *         @OA\Property(property="created_at", type="string")
-    //  *     )
-    //  * )
-    //  * @OA\Response(
-    //  *     response="404",
-    //  *     description="Errors",
-    //  *     @Model(type=ErrorResponse::class)
-    //  * )
-    //  * @OA\Response(
-    //  *     response="400",
-    //  *     description="Validation failed",
-    //  *     @Model(type=ErrorResponse::class)
-    //  * )
-    //  * @OA\RequestBody(@Model(type=PakegeUserRequest::class))
-    //  */
-    // #[Route(path: '/api/v1/pakege/user', methods: ['POST'])]
-    // public function pakegesUser(#[RequestBody] PakegeUserRequest $pakegeUserRequest): Response
-    // {
-    //     return $this->json($this->pakegeService->pakegesUser($pakegeUserRequest));
-    // }
+    /**
+     * @OA\Response(
+     *     response=200,
+     *     description="Return balance wallet user",
+     *     @OA\JsonContent(
+     *         @OA\Property(property="id", type="integer"),
+     *         @OA\Property(property="user_id", type="integer"),
+     *         @OA\Property(property="usdt", type="float"),
+     *         @OA\Property(property="token", type="float"),
+     *         @OA\Property(property="cometa", type="float"),
+     *         @OA\Property(property="etherium", type="float"),
+     *         @OA\Property(property="bitcoin", type="float"),
+     *     )
+     * )
+     * @OA\Response(
+     *     response="404",
+     *     description="Errors",
+     *     @Model(type=ErrorResponse::class)
+     * )
+     * @OA\Response(
+     *     response="400",
+     *     description="Validation failed",
+     *     @Model(type=ErrorResponse::class)
+     * )
+     */
+    #[Route(path: '/api/v1/wallet/user', methods: ['GET'])]
+    public function walletReview(UserInterface $user): Response
+    {
+        $current_user = $user;
+        return $this->json($this->walletService->wallet($current_user));
+    }
 
     // // /**
     // //  * @OA\Parameter(name="page", in="query", description="Page number", @OA\Schema(type="integer"))
     // //  * @OA\Response(
     // //  *     response=200,
-    // //  *     description="Returns page of reviews for the given saving mail",
+    // //  *     description="Returns balance wallet",
     // //  *     @Model(type=SavingMailReviewPage::class)
     // //  * )
     // //  * @OA\Response(
@@ -203,31 +205,19 @@ class WalletController extends AbstractController
     // //     ));
     // // }
 
-    // // /**
-    // //  * @OA\Response(
-    // //  *     response=200,
-    // //  *     description="Rewiew all transaction table",
-    // //  *     @Model(type=TransactionTableRewiewListResponse::class)
-    // //  * )
-    // //  */
-    // // #[Route(path: '/api/v1/transaction/table/rewiew/all', methods: ['GET'])]
-    // // public function rewiewAll(): Response
-    // // {
-    // //     return $this->json($this->transactionTableService->rewiew());
-    // // }
 
     // /**
     //  * @OA\Parameter(name="page", in="query", description="Page number", @OA\Schema(type="integer"))
     //  * @OA\Response(
     //  *     response=200,
-    //  *     description="Returns all pakages users with pagination",
-    //  *     @Model(type=PakegeReviewPage::class)
+    //  *     description="Returns all wallet users with pagination",
+    //  *     @Model(type=WalletReviewPage::class)
     //  * )
     //  */
-    // #[Route(path: '/api/v1/admin/pakege/all/page', methods: ['GET'])]
-    // public function rewiewPage(Request $request): Response
+    // #[Route(path: '/api/v1/wallet/all/page', methods: ['GET'])]
+    // public function walletAllPage(Request $request): Response
     // {
-    //     return $this->json($this->pakegeService->getReviewPageBy(
+    //     return $this->json($this->walletService->getReviewPageBy(
     //         $request->query->get('page', 1)
     //     ));
     // }
