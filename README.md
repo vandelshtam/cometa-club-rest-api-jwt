@@ -15,8 +15,6 @@ https://github.com/lexik/LexikJWTAuthenticationBundle/blob/2.x/Resources/doc/ind
 
 composer install
 ```
-composer install
-```
 
 ## Stubs Crud Simplify
 
